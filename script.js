@@ -1,49 +1,43 @@
-// Function to retrieve cookie by name
+// Function to get cookie value by name
 function getCookie(name) {
     const cookies = document.cookie.split("; ");
     for (let cookie of cookies) {
-        const [key, value] = cookie.split("=");
-        if (key === name) return value;
+        let [cookieName, value] = cookie.split("=");
+        if (cookieName === name) return value;
     }
-    return "";
+    return null;
 }
 
-// Function to set a cookie
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + value + expires + "; path=/";
-}
-
-// Function to apply preferences from cookies
+// Function to apply saved preferences
 function applyPreferences() {
-    const fontsize = getCookie("fontsize") || "16px";
-    const fontcolor = getCookie("fontcolor") || "#000000";
+    const savedFontSize = getCookie("fontsize");
+    const savedFontColor = getCookie("fontcolor");
 
-    document.documentElement.style.setProperty("--fontsize", fontsize);
-    document.documentElement.style.setProperty("--fontcolor", fontcolor);
+    if (savedFontSize) {
+        document.documentElement.style.setProperty("--fontsize", `${savedFontSize}px`);
+        document.getElementById("fontsize").value = savedFontSize;
+    }
 
-    document.getElementById("fontsize").value = parseInt(fontsize);
-    document.getElementById("fontcolor").value = fontcolor;
+    if (savedFontColor) {
+        document.documentElement.style.setProperty("--fontcolor", savedFontColor);
+        document.getElementById("fontcolor").value = savedFontColor;
+    }
 }
 
-// Save preferences when the form is submitted
+// Function to save preferences to cookies
 document.getElementById("font-form").addEventListener("submit", function(event) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent form submission
 
-    const fontsize = document.getElementById("fontsize").value + "px";
-    const fontcolor = document.getElementById("fontcolor").value;
+    const fontSize = document.getElementById("fontsize").value;
+    const fontColor = document.getElementById("fontcolor").value;
 
-    setCookie("fontsize", fontsize, 30);
-    setCookie("fontcolor", fontcolor, 30);
+    document.cookie = `fontsize=${fontSize}; path=/`;
+    document.cookie = `fontcolor=${fontColor}; path=/`;
 
     applyPreferences();
 });
 
-// Apply saved preferences on page load
+// Apply preferences when the page loads
 applyPreferences();
+
 
